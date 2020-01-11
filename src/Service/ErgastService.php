@@ -74,7 +74,7 @@ final class ErgastService implements F1ServiceInterface
                 $rSM = new AddRaceToSeasonMessage();
                 $rSM->setCircuitId($rawRace['Circuit']['circuitId'])
                     ->setCircuitName($rawRace['Circuit']['circuitName'])
-                    ->setDate(new \DateTime($rawRace['date']. ' ' . $rawRace['time']))
+                    ->setDate(new \DateTime($rawRace['date']. ' ' . (isset($rawRace['time']) ? $rawRace['time'] : '')))
                     ->setLocationCountry($rawRace['Circuit']['Location']['country'])
                     ->setLocationLocality($rawRace['Circuit']['Location']['locality'])
                     ->setLocationLat($rawRace['Circuit']['Location']['lat'])
