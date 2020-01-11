@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Race;
+use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,11 @@ class RaceRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Race::class);
+    }
+
+    public function findOneBySeasonAndRound(Season $season, $round)
+    {
+        return $this->findOneBy(['season' => $season, 'round' => $round]);
     }
 
     // /**

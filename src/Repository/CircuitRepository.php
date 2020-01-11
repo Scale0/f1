@@ -19,6 +19,16 @@ class CircuitRepository extends ServiceEntityRepository
         parent::__construct($registry, Circuit::class);
     }
 
+    /**
+     * @param $circuitId
+     *
+     * @return Circuit|null
+     */
+    public function findOneByCircuitId($circuitId)
+    {
+        return $this->findOneBy(['CircuitId' => $circuitId]);
+    }
+
     // /**
     //  * @return Circuit[] Returns an array of Circuit objects
     //  */

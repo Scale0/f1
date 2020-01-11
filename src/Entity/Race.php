@@ -23,10 +23,20 @@ class Race
     private $season;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Location", inversedBy="races")
+     * @ORM\Column(type="integer")
+     */
+    private $round;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Circuit")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $Location;
+    private $Circuit;
 
     public function getId(): ?int
     {
@@ -53,6 +63,42 @@ class Race
     public function setLocation(?Location $Location): self
     {
         $this->Location = $Location;
+
+        return $this;
+    }
+
+    public function getRound(): ?int
+    {
+        return $this->round;
+    }
+
+    public function setRound(int $round): self
+    {
+        $this->round = $round;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getCircuit(): ?Circuit
+    {
+        return $this->Circuit;
+    }
+
+    public function setCircuit(?Circuit $Circuit): self
+    {
+        $this->Circuit = $Circuit;
 
         return $this;
     }
