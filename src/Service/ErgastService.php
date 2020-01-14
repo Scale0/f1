@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Circuit;
+use App\Entity\Constructor;
 use App\Entity\Season;
 use App\Entity\ScheduledMessage;
+use App\Message\AddConstructorMessage;
 use App\Message\AddRaceToSeasonMessage;
 use App\Message\AddSeasonMessage;
 use App\Repository\CircuitRepository;
+use App\Repository\ConstructorRepository;
 use App\Repository\ScheduledMessageRepository;
 use App\Repository\SeasonRepository;
 use Symfony\Component\Messenger\MessageBus;
@@ -27,6 +30,9 @@ final class ErgastService implements F1ServiceInterface
      */
     private $circuitRepository;
 
+    /** @var ConstructorRepository */
+    private $constructorRepository;
+
     /**
      * @var ScheduledMessageRepository
      */
@@ -41,11 +47,13 @@ final class ErgastService implements F1ServiceInterface
         ScheduledMessageRepository $scheduledMessageRepository,
         SeasonRepository $seasonRepository,
         CircuitRepository $circuitRepository,
-        MessageBusInterface $bus)
+        MessageBusInterface $bus,
+        ConstructorRepository $constructorRepository)
     {
         $this->scheduledMessageRepository = $scheduledMessageRepository;
         $this->seasonRepository = $seasonRepository;
         $this->circuitRepository = $circuitRepository;
+        $this->constructorRepository = $constructorRepository;
         $this->bus = $bus;
     }
 
@@ -59,6 +67,27 @@ final class ErgastService implements F1ServiceInterface
             $addSeason->setYear($result['SeasonTable']['Seasons'][0]['season']);
 
             $this->bus->dispatch($addSeason);
+
+        }
+    }
+
+    public function updateConstructors(Season $season): void
+    {
+        $constructors = $this->getResultsFromApi('current/constructors');
+        $rawConstructors = $constructors['ConstructorTable']['Constructors'];
+
+        foreach ($rawConstructors as $rawConstructor) {
+            /** @var Constructor $constructor */
+            $constructor = $this->constructorRepository->findOneBy(['constructorId' => $rawConstructor['constructorId']]);
+            if (empty($constructor)) {
+                $constructorMessage = new AddConstructorMessage();
+                $constructorMessage
+                    ->setConstructorId($rawConstructor['constructorId'])
+                    ->setName($rawConstructor['name'])
+                    ->setNationality($rawConstructor['nationality']);
+
+                $this->bus->dispatch($constructorMessage);
+            }
         }
     }
 

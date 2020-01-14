@@ -8,9 +8,11 @@ use App\Entity\Season;
 
 interface F1ServiceInterface
 {
-    function addSeason(string $year): void;
+    public function addSeason(string $year): void;
 
-    function addRaceScheduleToSeason(Season $season): void;
+    public function addRaceScheduleToSeason(Season $season): void;
 
     function getResultsFromApi($url): array;
+
+    public function updateConstructors(Season $season): void;
 }

@@ -36,5 +36,7 @@ final class AddSeasonHandler implements MessageHandlerInterface
         $this->managerRegistry->getManager()->flush();
 
         $this->f1Service->addRaceScheduleToSeason($season);
+        $this->f1Service->updateConstructors($season);
+
     }
 }
