@@ -56,6 +56,5 @@ class AddRaceToSeasonHandler implements MessageHandlerInterface
 
 
 
-        // TODO: Implement __invoke() method.
     }
 }
