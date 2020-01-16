@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Message;
 
+use App\Entity\Season;
+
 final class AddConstructorMessage
 {
     private $constructorId;
@@ -11,6 +13,8 @@ final class AddConstructorMessage
     private $name;
 
     private $nationality;
+
+    private $season;
 
     /**
      * @return mixed
@@ -72,5 +76,23 @@ final class AddConstructorMessage
         return $this;
     }
 
+    /**
+     * @return Season
+     */
+    public function getSeason(): Season
+    {
+        return $this->season;
+    }
 
+    /**
+     * @param Season $season
+     *
+     * @return self
+     */
+    public function setSeason($season): self
+    {
+        $this->season = $season;
+
+        return $this;
+    }
 }

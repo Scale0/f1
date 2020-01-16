@@ -72,6 +72,8 @@ class CheckNewSeasonCommand extends Command
         /** @var Season $currentSeason */
         $currentSeason = $this->seasonRepository->findCurrentSeason();
 
+        $this->f1Service->updateConstructors($currentSeason[0]);
+        die();
         if (empty($currentSeason) || !empty($currentSeason) && $currentSeason[0]->getYear() < date('Y')) {
             $this->f1Service->addSeason(date('Y'));
         }

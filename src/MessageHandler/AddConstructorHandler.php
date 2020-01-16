@@ -6,6 +6,7 @@ namespace App\MessageHandler;
 
 use App\Message\AddConstructorMessage;
 use App\Service\Constructor\ConstructorFactory;
+use App\Service\F1ServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -13,10 +14,13 @@ class AddConstructorHandler implements MessageHandlerInterface
 {
     /** @var ManagerRegistry  */
     private $managerRegistry;
+    /** @var F1ServiceInterface */
+    private $f1Service;
 
-    public function __construct(ManagerRegistry $managerRegistry)
+    public function __construct(ManagerRegistry $managerRegistry, F1ServiceInterface $f1Service)
     {
         $this->managerRegistry = $managerRegistry;
+        $this->f1Service = $f1Service;
     }
 
     public function __invoke(AddConstructorMessage $addConstructorMessage)
@@ -30,5 +34,6 @@ class AddConstructorHandler implements MessageHandlerInterface
         $this->managerRegistry->getManager()->persist($constructor);
         $this->managerRegistry->getManager()->flush();
 
+        $this->f1Service->updateDrivers($addConstructorMessage->getSeason(), $constructor);
     }
 }

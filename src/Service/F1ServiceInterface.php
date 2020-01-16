@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Constructor;
 use App\Entity\Season;
 
 interface F1ServiceInterface
@@ -15,4 +16,6 @@ interface F1ServiceInterface
     function getResultsFromApi($url): array;
 
     public function updateConstructors(Season $season): void;
+
+    public function updateDrivers(Season $season, Constructor $constructor);
 }
