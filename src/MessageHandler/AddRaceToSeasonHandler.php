@@ -53,8 +53,5 @@ class AddRaceToSeasonHandler implements MessageHandlerInterface
         $location = $this->locationService->createLocationIfNotExisting($this->managerRegistry, $arts);
         $circuit = $this->circuitService->createCircuitIfNotExisting($this->managerRegistry, $arts, $location);
         $this->raceService->createRaceIfNotExisting($this->managerRegistry, $arts, $circuit);
-
-
-
     }
 }

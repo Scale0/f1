@@ -30,7 +30,7 @@ class Circuit
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $CircuitId;
+    private $circuitId;
 
     public function getId(): ?int
     {
@@ -63,12 +63,12 @@ class Circuit
 
     public function getCircuitId(): ?string
     {
-        return $this->CircuitId;
+        return $this->circuitId;
     }
 
-    public function setCircuitId(string $CircuitId): self
+    public function setCircuitId(string $circuitId): self
     {
-        $this->CircuitId = $CircuitId;
+        $this->circuitId = $circuitId;
 
         return $this;
     }
