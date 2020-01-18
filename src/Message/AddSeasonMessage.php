@@ -9,6 +9,7 @@ use Webmozart\Assert\Assert;
 final class AddSeasonMessage
 {
 
+    /** @var integer */
     private $year;
 
     /**
@@ -18,7 +19,7 @@ final class AddSeasonMessage
      */
     public function setYear($year): self
     {
-        $this->year = $year;
+        $this->year = intval($year);
 
         return $this;
     }

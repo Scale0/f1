@@ -7,17 +7,22 @@ namespace App\Service;
 use App\Entity\Circuit;
 use App\Entity\Constructor;
 use App\Entity\Driver;
+use App\Entity\Race;
 use App\Entity\Season;
 use App\Entity\ScheduledMessage;
 use App\Message\AddConstructorMessage;
 use App\Message\AddDriverMessage;
 use App\Message\AddRaceToSeasonMessage;
+use App\Message\AddResultToRaceMessage;
 use App\Message\AddSeasonMessage;
 use App\Repository\CircuitRepository;
 use App\Repository\ConstructorRepository;
 use App\Repository\DriverRepository;
+use App\Repository\RaceResultRepository;
 use App\Repository\ScheduledMessageRepository;
 use App\Repository\SeasonRepository;
+use Symfony\Component\Asset\Package;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -31,6 +36,8 @@ final class ErgastService implements F1ServiceInterface
     private $constructorRepository;
     /** @var DriverRepository */
     private $driverRepository;
+    /** @var RaceResultRepository */
+    private $raceResultRepository;
     /** @var ScheduledMessageRepository */
     private $scheduledMessageRepository;
     /**
@@ -44,6 +51,7 @@ final class ErgastService implements F1ServiceInterface
         CircuitRepository $circuitRepository,
         ConstructorRepository $constructorRepository,
         DriverRepository $driverRepository,
+        RaceResultRepository $raceResultRepository,
         MessageBusInterface $bus
     )
     {
@@ -52,6 +60,7 @@ final class ErgastService implements F1ServiceInterface
         $this->circuitRepository = $circuitRepository;
         $this->constructorRepository = $constructorRepository;
         $this->driverRepository = $driverRepository;
+        $this->raceResultRepository = $raceResultRepository;
         $this->bus = $bus;
     }
 
@@ -65,7 +74,6 @@ final class ErgastService implements F1ServiceInterface
             $addSeason->setYear($result['SeasonTable']['Seasons'][0]['season']);
 
             $this->bus->dispatch($addSeason);
-
         }
     }
 
@@ -97,10 +105,12 @@ final class ErgastService implements F1ServiceInterface
         $schedule = $this->getResultsFromApi($season->getYear());
         $rawRaces = $schedule['RaceTable']['Races'];
 
+
         foreach($rawRaces as $rawRace) {
             /** @var Circuit $circuit */
             $circuit = $this->circuitRepository->findBy(['circuitId' => $rawRace['Circuit']['circuitId']]);
             if (empty($circuit)) {
+
                 $rSM = new AddRaceToSeasonMessage();
                 $rSM->setCircuitId($rawRace['Circuit']['circuitId'])
                     ->setCircuitName($rawRace['Circuit']['circuitName'])
@@ -112,7 +122,6 @@ final class ErgastService implements F1ServiceInterface
                     ->setName($rawRace['raceName'])
                     ->setRound(intval($rawRace['round']))
                     ->setSeason($season);
-
                 $this->bus->dispatch($rSM);
             }
         }
@@ -143,7 +152,6 @@ final class ErgastService implements F1ServiceInterface
                     ->setDateOfBirth(new \DateTime($rawDriver['dateOfBirth']))
                     ->setNationality($rawDriver['nationality']);
                 $this->bus->dispatch($driverMessage);
-                die();
             }
         }
     }
@@ -151,12 +159,55 @@ final class ErgastService implements F1ServiceInterface
     function getResultsFromApi($url): array
     {
         $baseUri = $_ENV['ERGAST_BASE_URI'];
+        $client = HttpClient::createForBaseUri($baseUri);
+        $response = $client->request('GET', $url.'.json');
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        CURL_SETOPT($ch, CURLOPT_URL, $baseUri . $url . '.json');
-        $result = curl_exec($ch);
-        return json_decode($result, true)['MRData'];
+        return $response->toArray()['MRData'];
+    }
+
+    public function updateRaceResults(Race $race): void
+    {
+        $rawRaceResults = $this->getResultsFromApi($race->getSeason()->getYear() . '/' . $race->getRound() . '/results');
+        $rawRaceResults = $rawRaceResults['RaceTable']['Races'][0]['Results'];
+        foreach($rawRaceResults as $rawRaceResult) {
+            $driver = $this->driverRepository->findBy(['driverId' => $rawRaceResult['Driver']['driverId']]);
+            $raceResult = $this->raceResultRepository->findBy([
+                'race' => $race,
+                'driver' => $driver
+            ]);
+            if (empty($raceResult)) {
+                $raceResultMessage = new AddResultToRaceMessage();
+                $raceResultMessage
+                    ->setRace($race)
+                    ->setDriver($driver)
+                    ->setPosition(intval($rawRaceResult['position']))
+                    ->setGrid(intval($rawRaceResult['grid']))
+                    ->setLaps(intval($rawRaceResult['laps']))
+                    ->setStatus($rawRaceResult['status'])
+                ;
+            }
+
+        }
+        die();
+    }
+
+    function asciiF1Car(): string
+    {
+        return '
+                                     d88b
+                     _______________|8888|_______________
+                    |_____________ ,~~~~~~. _____________|
+  _________         |_____________: mmmmmm :_____________|         _________
+ / _______ \   ,----|~~~~~~~~~~~,\'\ _...._ /`.~~~~~~~~~~~|----,   / _______ \
+| /       \ |  |    |       |____|,d~    ~b.|____|       |    |  | /       \ |
+||         |-------------------\-d.-~~~~~~-.b-/-------------------|         ||
+||         | |8888 ....... _,===~/......... \~===._         8888| |         ||
+||         |=========_,===~~======._.=~~=._.======~~===._=========|         ||
+||         | |888===~~ ...... //,, .`~~~~\'. .,\\        ~~===888|  |         ||
+||        |===================,P\'.::::::::.. `?,===================|        ||
+||        |_________________,P\'_::----------.._`?,_________________|        ||
+`|        |-------------------~~~~~~~~~~~~~~~~~~-------------------|        |\'
+  \_______/                                                        \_______/
+</>';
     }
 }

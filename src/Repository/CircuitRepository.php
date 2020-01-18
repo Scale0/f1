@@ -26,7 +26,7 @@ class CircuitRepository extends ServiceEntityRepository
      */
     public function findOneByCircuitId($circuitId)
     {
-        return $this->findOneBy(['CircuitId' => $circuitId]);
+        return $this->findOneBy(['circuitId' => $circuitId]);
     }
 
     // /**

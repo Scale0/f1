@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,6 +39,16 @@ class Race
      * @ORM\JoinColumn(nullable=false)
      */
     private $Circuit;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RaceResult", mappedBy="Race")
+     */
+    private $raceResults;
+
+    public function __construct()
+    {
+        $this->raceResults = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -99,6 +111,37 @@ class Race
     public function setCircuit(?Circuit $Circuit): self
     {
         $this->Circuit = $Circuit;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RaceResult[]
+     */
+    public function getRaceResults(): Collection
+    {
+        return $this->raceResults;
+    }
+
+    public function addRaceResult(RaceResult $raceResult): self
+    {
+        if (!$this->raceResults->contains($raceResult)) {
+            $this->raceResults[] = $raceResult;
+            $raceResult->setRace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRaceResult(RaceResult $raceResult): self
+    {
+        if ($this->raceResults->contains($raceResult)) {
+            $this->raceResults->removeElement($raceResult);
+            // set the owning side to null (unless already changed)
+            if ($raceResult->getRace() === $this) {
+                $raceResult->setRace(null);
+            }
+        }
 
         return $this;
     }

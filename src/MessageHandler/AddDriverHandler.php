@@ -42,9 +42,5 @@ final class AddDriverHandler extends DefaultF1MessageHandler implements MessageH
         ;
 
         $this->bus->dispatch($driverToConstructorAndSeason);
-
-        dump($driver);
-        die();
-        // TODO: Implement __invoke() method.
     }
 }
