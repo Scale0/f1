@@ -16,9 +16,12 @@ final class ConstructorFactory
      */
     public static function create(array $parameters): Constructor
     {
-        Assert::keyExists($parameters, 'constructorId', 'ConstructorId not injected');
-        Assert::keyExists($parameters, 'name', 'Name not injected');
-        Assert::keyExists($parameters, 'nationality', 'Nationality not injected');
+        Assert::keyExists($parameters, 'constructorId', '%s not injected');
+        Assert::keyExists($parameters, 'name', '%s not injected');
+        Assert::keyExists($parameters, 'nationality', '%s not injected');
+        Assert::string($parameters['constructorId']);
+        Assert::string($parameters['name']);
+        Assert::string($parameters['nationality']);
 
         $constructor = new Constructor();
         $constructor

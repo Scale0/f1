@@ -12,6 +12,7 @@ final class SeasonFactory
     static public function create($parameters) : Season
     {
         Assert::keyExists($parameters, 'year', 'year not injected');
+        Assert::integer($parameters['year']);
         $season = new Season();
         $season->setYear(intval($parameters['year']));
         return $season;
