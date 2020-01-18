@@ -18,7 +18,13 @@ class DriverFactory
         Assert::keyExists($parameters, 'lastName', '%s not injected');
         Assert::keyExists($parameters, 'dateOfBirth', '%s not injected');
         Assert::keyExists($parameters, 'nationality', '%s not injected');
-
+        Assert::string($parameters['driverId']);
+        Assert::string($parameters['code']);
+        Assert::integer($parameters['permanentNumber']);
+        Assert::string($parameters['firstName']);
+        Assert::string($parameters['lastName']);
+        Assert::isInstanceOf($parameters['dateOfBirth'], \DateTime::class);
+        Assert::string($parameters['nationality']);
         $driver = new Driver();
         $driver
             ->setDriverId($parameters['driverId'])

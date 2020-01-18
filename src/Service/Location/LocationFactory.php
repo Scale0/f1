@@ -11,10 +11,14 @@ class LocationFactory
 {
     public static function create(array $parameters): Location
     {
-        Assert::keyExists($parameters, 'country', 'Country not injected');
-        Assert::keyExists($parameters, 'latitude', 'Latitude not injected');
-        Assert::keyExists($parameters, 'longitude', 'Longitude not injected');
-        Assert::keyExists($parameters, 'locality', 'Locality not injected');
+        Assert::keyExists($parameters, 'country', '%s not injected');
+        Assert::keyExists($parameters, 'latitude', '%s not injected');
+        Assert::keyExists($parameters, 'longitude', '%s not injected');
+        Assert::keyExists($parameters, 'locality', '%s not injected');
+        Assert::string($parameters['country']);
+        Assert::string($parameters['latitude']);
+        Assert::string($parameters['longitude']);
+        Assert::string($parameters['locality']);
 
         $location = new Location();
         $location->setCountry($parameters['country'])
