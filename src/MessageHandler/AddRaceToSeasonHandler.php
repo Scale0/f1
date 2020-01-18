@@ -13,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class AddRaceToSeasonHandler extends defaultF1MessageHandler implements MessageHandlerInterface
+class AddRaceToSeasonHandler extends DefaultF1MessageHandler implements MessageHandlerInterface
 {
     /**
      * @var LocationService
