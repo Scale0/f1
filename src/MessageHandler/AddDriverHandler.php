@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class AddDriverHandler extends defaultF1MessageHandler  implements MessageHandlerInterface
+final class AddDriverHandler extends DefaultF1MessageHandler implements MessageHandlerInterface
 {
     public function __invoke(AddDriverMessage $addDriverMessage)
     {

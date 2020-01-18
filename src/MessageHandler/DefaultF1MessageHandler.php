@@ -9,7 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class defaultF1MessageHandler
+class DefaultF1MessageHandler
 {
     /** @var ManagerRegistry */
     protected $managerRegistry;

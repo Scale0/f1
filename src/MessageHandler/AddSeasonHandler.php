@@ -10,7 +10,7 @@ use App\Service\Season\SeasonFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class AddSeasonHandler extends defaultF1MessageHandler implements MessageHandlerInterface
+final class AddSeasonHandler extends DefaultF1MessageHandler implements MessageHandlerInterface
 {
     public function __invoke(AddSeasonMessage $message)
     {

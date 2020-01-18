@@ -6,11 +6,10 @@ namespace App\MessageHandler;
 
 use App\Message\AddConstructorMessage;
 use App\Service\Constructor\ConstructorFactory;
-use App\Service\F1ServiceInterface;
-use Doctrine\Persistence\ManagerRegistry;
+
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddConstructorHandler extends defaultF1MessageHandler implements MessageHandlerInterface
+class AddConstructorHandler extends DefaultF1MessageHandler implements MessageHandlerInterface
 {
     public function __invoke(AddConstructorMessage $addConstructorMessage)
     {
