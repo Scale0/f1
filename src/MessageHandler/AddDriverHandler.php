@@ -12,24 +12,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class AddDriverHandler implements MessageHandlerInterface
+final class AddDriverHandler extends defaultF1MessageHandler  implements MessageHandlerInterface
 {
-    /** @var ManagerRegistry */
-    private $managerRegistry;
-
-    /** @var F1ServiceInterface */
-    private $f1Service;
-
-    /** @var MessageBusInterface */
-    private $bus;
-
-    public function __construct(ManagerRegistry $managerRegistry, F1ServiceInterface $f1Service, MessageBusInterface $bus)
-    {
-        $this->managerRegistry = $managerRegistry;
-        $this->f1Service = $f1Service;
-        $this->bus = $bus;
-    }
-
     public function __invoke(AddDriverMessage $addDriverMessage)
     {
         $parameters = [
