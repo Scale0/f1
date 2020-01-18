@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Commands;
 
 use App\Entity\Season;
-use App\Repository\ScheduledMessageRepository;
 use App\Repository\SeasonRepository;
 use App\Service\F1ServiceInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class CheckNewSeasonCommand extends Command
 {
@@ -35,6 +33,7 @@ class CheckNewSeasonCommand extends Command
      * ScheduledMessage constructor.
      *
      * @param F1ServiceInterface $f1Service
+     * @param SeasonRepository $seasonRepository
      */
     public function __construct(
         F1ServiceInterface $f1Service,
@@ -52,31 +51,20 @@ class CheckNewSeasonCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('checking new season
-                                     d88b
-                     _______________|8888|_______________
-                    |_____________ ,~~~~~~. _____________|
-  _________         |_____________: mmmmmm :_____________|         _________
- / _______ \   ,----|~~~~~~~~~~~,\'\ _...._ /`.~~~~~~~~~~~|----,   / _______ \
-| /       \ |  |    |       |____|,d~    ~b.|____|       |    |  | /       \ |
-||         |-------------------\-d.-~~~~~~-.b-/-------------------|         ||
-||         | |8888 ....... _,===~/......... \~===._         8888| |         ||
-||         |=========_,===~~======._.=~~=._.======~~===._=========|         ||
-||         | |888===~~ ...... //,, .`~~~~\'. .,\\        ~~===888|  |         ||
-||        |===================,P\'.::::::::.. `?,===================|        ||
-||        |_________________,P\'_::----------.._`?,_________________|        ||
-`|        |-------------------~~~~~~~~~~~~~~~~~~-------------------|        |\'
-  \_______/                                                        \_______/
-</>');
+        $year = $input->getArgument('year') ?? date('Y');
+        $output->writeln('checking for season ' . $year . ' '. $this->f1Service->asciiF1Car());
         /** @var Season $currentSeason */
-        $currentSeason = $this->seasonRepository->findCurrentSeason();
+        $currentSeason = $this->seasonRepository->findSeasonByYear($year);
 
-        if (empty($currentSeason) || !empty($currentSeason) && $currentSeason[0]->getYear() < date('Y')) {
-            $this->f1Service->addSeason(date('Y'));
+        if (empty($currentSeason)) {
+            $this->f1Service->addSeason($year);
         }
+
+        $output->writeln('Done!');
         return 0;
     }
     /**
@@ -84,6 +72,8 @@ class CheckNewSeasonCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('updates current season to current year');
+        $this
+            ->setDescription('updates current season to current year')
+            ->addArgument('year', InputArgument::OPTIONAL, 'Year to get data from');
     }
 }

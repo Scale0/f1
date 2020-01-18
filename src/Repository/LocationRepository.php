@@ -19,6 +19,17 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
+    /**
+     * @param $longitude
+     * @param $latitude
+     *
+     * @return Location|null
+     */
+    public function findOneByLongitudeAndLatitude($longitude, $latitude)
+    {
+        return $this->findOneBy(['longitude' => $longitude, 'latitude' => $latitude]);
+    }
+
     // /**
     //  * @return Location[] Returns an array of Location objects
     //  */
