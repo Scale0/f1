@@ -19,7 +19,11 @@ class ScheduledMessageRepository extends ServiceEntityRepository
         parent::__construct($registry, ScheduledMessage::class);
     }
 
-    public function findMessagesToExecute(): array
+    /**
+     * @return ScheduledMessage[]
+     * @throws \Exception
+     */
+    public function findMessagesToExecute():?array
     {
         return $this->createQueryBuilder('scheduledMessage')
             ->andWhere('scheduledMessage.scheduled <= :now')

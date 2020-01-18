@@ -20,15 +20,18 @@ class SeasonRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Season[] Returns an array of Season objects
+     * @param $year
+     *
+     * @return Season Returns an single Season objects
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function findCurrentSeason()
+    public function findSeasonByYear($year):?Season
     {
         return $this->createQueryBuilder('s')
-            ->orderBy('s.year', 'DESC')
-            ->setMaxResults('1')
+            ->where('s.year = ?1')
+            ->setParameter('1', $year)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 
     // /**

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -42,6 +44,16 @@ class DriverConstructorSeason
      */
     private $Season;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RaceResult", mappedBy="Driver")
+     */
+    private $raceResults;
+
+    public function __construct()
+    {
+        $this->raceResults = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +91,37 @@ class DriverConstructorSeason
     public function setSeason(?Season $Season): self
     {
         $this->Season = $Season;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RaceResult[]
+     */
+    public function getRaceResults(): Collection
+    {
+        return $this->raceResults;
+    }
+
+    public function addRaceResult(RaceResult $raceResult): self
+    {
+        if (!$this->raceResults->contains($raceResult)) {
+            $this->raceResults[] = $raceResult;
+            $raceResult->setDriver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRaceResult(RaceResult $raceResult): self
+    {
+        if ($this->raceResults->contains($raceResult)) {
+            $this->raceResults->removeElement($raceResult);
+            // set the owning side to null (unless already changed)
+            if ($raceResult->getDriver() === $this) {
+                $raceResult->setDriver(null);
+            }
+        }
 
         return $this;
     }
