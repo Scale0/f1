@@ -10,19 +10,8 @@ use App\Service\F1ServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddConstructorHandler implements MessageHandlerInterface
+class AddConstructorHandler extends defaultF1MessageHandler implements MessageHandlerInterface
 {
-    /** @var ManagerRegistry  */
-    private $managerRegistry;
-    /** @var F1ServiceInterface */
-    private $f1Service;
-
-    public function __construct(ManagerRegistry $managerRegistry, F1ServiceInterface $f1Service)
-    {
-        $this->managerRegistry = $managerRegistry;
-        $this->f1Service = $f1Service;
-    }
-
     public function __invoke(AddConstructorMessage $addConstructorMessage)
     {
         $parameters = [

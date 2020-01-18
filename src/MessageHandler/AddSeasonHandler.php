@@ -10,24 +10,8 @@ use App\Service\Season\SeasonFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class AddSeasonHandler implements MessageHandlerInterface
+final class AddSeasonHandler extends defaultF1MessageHandler implements MessageHandlerInterface
 {
-    /**
-     * @var ManagerRegistry
-     */
-    private $managerRegistry;
-
-    /**
-     * @var F1ServiceInterface
-     */
-    private $f1Service;
-
-    public function __construct(ManagerRegistry $managerRegistry, F1ServiceInterface $f1Service)
-    {
-        $this->managerRegistry = $managerRegistry;
-        $this->f1Service = $f1Service;
-    }
-
     public function __invoke(AddSeasonMessage $message)
     {
         $season = SeasonFactory::create(['year' => $message->getYear()]);

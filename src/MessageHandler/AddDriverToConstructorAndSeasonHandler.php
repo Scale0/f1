@@ -8,7 +8,7 @@ use App\Message\AddDriverToConstructorAndSeasonMessage;
 use App\Service\Season\DriverConstructorSeasonFactory;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddDriverToConstructorAndSeasonHandler implements MessageHandlerInterface
+class AddDriverToConstructorAndSeasonHandler extends defaultF1MessageHandler implements MessageHandlerInterface
 {
     public function __invoke(AddDriverToConstructorAndSeasonMessage $addDriverToConstructorAndSeasonMessage)
     {
@@ -21,6 +21,9 @@ class AddDriverToConstructorAndSeasonHandler implements MessageHandlerInterface
         $addDriverToConstructorAndSeasonMessage->getConstructor();
 
         $driverConstructorSeason = DriverConstructorSeasonFactory::create($parameters);
-        // TODO: Implement __invoke() method.
+
+        $this->managerRegistry->getManager()->persist($driverConstructorSeason);
+        $this->managerRegistry->getManager()->flush();
+
     }
 }

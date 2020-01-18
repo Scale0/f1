@@ -11,19 +11,10 @@ use App\Service\Location\LocationService;
 use App\Service\Race\RaceService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
-class AddRaceToSeasonHandler implements MessageHandlerInterface
+class AddRaceToSeasonHandler extends defaultF1MessageHandler implements MessageHandlerInterface
 {
-    /**
-     * @var ManagerRegistry
-     */
-    private $managerRegistry;
-
-    /**
-     * @var F1ServiceInterface
-     */
-    private $f1Service;
-
     /**
      * @var LocationService
      */
@@ -39,10 +30,10 @@ class AddRaceToSeasonHandler implements MessageHandlerInterface
         F1ServiceInterface $f1Service,
         LocationService $locationService,
         CircuitService $circuitService,
-        RaceService $raceService
+        RaceService $raceService,
+        MessageBusInterface $bus
     ) {
-        $this->managerRegistry = $managerRegistry;
-        $this->f1Service = $f1Service;
+        parent::__construct($managerRegistry, $f1Service, $bus);
         $this->locationService = $locationService;
         $this->circuitService = $circuitService;
         $this->raceService = $raceService;
