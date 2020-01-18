@@ -170,7 +170,7 @@ final class ErgastService implements F1ServiceInterface
         $rawRaceResults = $this->getResultsFromApi($race->getSeason()->getYear() . '/' . $race->getRound() . '/results');
         $rawRaceResults = $rawRaceResults['RaceTable']['Races'][0]['Results'];
         foreach($rawRaceResults as $rawRaceResult) {
-            $driver = $this->driverRepository->findBy(['driverId' => $rawRaceResult['Driver']['driverId']]);
+            $driver = $this->driverRepository->findOneBy(['driverId' => $rawRaceResult['Driver']['driverId']]);
             $raceResult = $this->raceResultRepository->findBy([
                 'race' => $race,
                 'driver' => $driver
@@ -185,6 +185,7 @@ final class ErgastService implements F1ServiceInterface
                     ->setLaps(intval($rawRaceResult['laps']))
                     ->setStatus($rawRaceResult['status'])
                 ;
+                $this->bus->dispatch($raceResultMessage);
             }
 
         }
