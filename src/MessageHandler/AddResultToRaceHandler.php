@@ -18,7 +18,7 @@ class AddResultToRaceHandler extends DefaultF1MessageHandler implements MessageH
     /** @var RaceRepository */
     private $raceRepository;
     /** @var DriverConstructorSeasonRepository */
-    private $driverConstructorRepository;
+    private $driverConstructorSeasonRepository;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
@@ -29,12 +29,13 @@ class AddResultToRaceHandler extends DefaultF1MessageHandler implements MessageH
     ) {
         parent::__construct($managerRegistry, $f1Service, $bus);
         $this->raceRepository = $raceRepository;
-        $this->driverConstructorRepository = $driverConstructorSeasonRepository;
+        $this->driverConstructorSeasonRepository = $driverConstructorSeasonRepository;
     }
 
     public function __invoke(AddResultToRaceMessage $raceResult){
         $race = $this->raceRepository->find($raceResult->getRace()->getId());
-        $driver = $this->driverConstructorRepository->find($raceResult->getDriver()->getId());
+        $driver = $this->driverConstructorSeasonRepository->find($raceResult->getDriver()->getId());
+
         $result = RaceResultFactory::create(
             [
                 'race' => $race,
@@ -42,10 +43,13 @@ class AddResultToRaceHandler extends DefaultF1MessageHandler implements MessageH
                 'position' => $raceResult->getPosition(),
                 'status' => $raceResult->getStatus(),
                 'laps' => $raceResult->getLaps(),
-                'grid' => $raceResult->getGrid()
+                'grid' => $raceResult->getGrid(),
+                'fastestLap' => $raceResult->getFastestLap(),
+                'fastestLapRank' => $raceResult->getFastestLapRank(),
+                'fastestLapTime' => $raceResult->getFastestLapTime(),
+                'avgSpeed' => $raceResult->getAvgSpeed()
             ]
         );
-
         $this->managerRegistry->getManager()->persist($result);
         $this->managerRegistry->getManager()->flush();
     }

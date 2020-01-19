@@ -211,6 +211,10 @@ final class ErgastService implements F1ServiceInterface
                 ]
             );
             if (empty($raceResult)) {
+                $fastestLap = $this->returnIntOrNull($rawRaceResult['FastestLap']['lap'] ?? null);
+                $fastestLapRank = $this->returnIntOrNull($rawRaceResult['FastestLap']['rank'] ?? null);
+                $fastestLapTime = $rawRaceResult['FastestLap']['Time']['time'] ?? null;
+                $avgSpeed = $rawRaceResult['FastestLap']['AverageSpeed']['speed'] ?? null;
                 $driver = $this->driverConstructorSeasonRepo->findOneBy(['driver' => $driver, 'season' => $race->getSeason()]);
                 $raceResultMessage = new AddResultToRaceMessage();
                 $raceResultMessage
@@ -220,10 +224,18 @@ final class ErgastService implements F1ServiceInterface
                     ->setGrid(intval($rawRaceResult['grid']))
                     ->setLaps(intval($rawRaceResult['laps']))
                     ->setStatus($rawRaceResult['status'])
+                    ->setFastestLap($fastestLap)
+                    ->setFastestLapRank($fastestLapRank)
+                    ->setFastestLapTime($fastestLapTime)
+                    ->setAvgSpeed($avgSpeed)
                 ;
                 $this->bus->dispatch($raceResultMessage);
             }
         }
+    }
+
+    private function returnIntOrNull($value) {
+        return !is_null($value) ? intval($value) : $value;
     }
 
     function asciiF1Car(): string

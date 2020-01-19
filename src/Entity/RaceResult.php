@@ -48,6 +48,26 @@ class RaceResult
      */
     private $laps;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $fastestLap;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $fastestLapRank;
+
+    /**
+     * @ORM\Column(type="string", length=11, nullable=true)
+     */
+    private $fastestLapTime;
+
+    /**
+     * @ORM\Column(type="string", length=11, nullable=true)
+     */
+    private $avgSpeed;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +141,54 @@ class RaceResult
     public function setLaps(int $laps): self
     {
         $this->laps = $laps;
+
+        return $this;
+    }
+
+    public function getFastestLap(): ?int
+    {
+        return $this->fastestLap;
+    }
+
+    public function setFastestLap(?int $fastestLap): self
+    {
+        $this->fastestLap = $fastestLap;
+
+        return $this;
+    }
+
+    public function getFastestLapRank(): ?int
+    {
+        return $this->fastestLapRank;
+    }
+
+    public function setFastestLapRank(?int $fastestLapRank): self
+    {
+        $this->fastestLapRank = $fastestLapRank;
+
+        return $this;
+    }
+
+    public function getFastestLapTime(): ?string
+    {
+        return $this->fastestLapTime;
+    }
+
+    public function setFastestLapTime(?string $fastestLapTime): self
+    {
+        $this->fastestLapTime = $fastestLapTime;
+
+        return $this;
+    }
+
+    public function getAvgSpeed(): ?string
+    {
+        return $this->avgSpeed;
+    }
+
+    public function setAvgSpeed(?string $avgSpeed): self
+    {
+        $this->avgSpeed = $avgSpeed;
 
         return $this;
     }

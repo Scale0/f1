@@ -21,6 +21,14 @@ class AddResultToRaceMessage
     private $grid;
     /** @var integer */
     private $laps;
+    /** @var integer */
+    private $fastestLap;
+    /** @var integer */
+    private $fastestLapRank;
+    /** @var string */
+    private $fastestLapTime;
+    /** @var string */
+    private $avgSpeed;
 
     /**
      * @return Race
@@ -131,13 +139,93 @@ class AddResultToRaceMessage
     }
 
     /**
-     * @param int $laps
+     * @param int|null $laps
      *
      * @return self
      */
-    public function setLaps(int $laps): self
+    public function setLaps(?int $laps): self
     {
         $this->laps = $laps;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFastestLap(): ?int
+    {
+        return $this->fastestLap;
+    }
+
+    /**
+     * @param int|null $fastestLap
+     *
+     * @return self
+     */
+    public function setFastestLap(?int $fastestLap): self
+    {
+        $this->fastestLap = $fastestLap;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFastestLapRank(): ?int
+    {
+        return $this->fastestLapRank;
+    }
+
+    /**
+     * @param int|null $fastestLapRank
+     *
+     * @return self
+     */
+    public function setFastestLapRank(?int $fastestLapRank): self
+    {
+        $this->fastestLapRank = $fastestLapRank;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFastestLapTime(): ?string
+    {
+        return $this->fastestLapTime;
+    }
+
+    /**
+     * @param string|null $fastestLapTime
+     *
+     * @return self
+     */
+    public function setFastestLapTime(?string $fastestLapTime): self
+    {
+        $this->fastestLapTime = $fastestLapTime;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvgSpeed(): ?string
+    {
+        return $this->avgSpeed;
+    }
+
+    /**
+     * @param string|null $avgSpeed
+     *
+     * @return self
+     */
+    public function setAvgSpeed(?string $avgSpeed): self
+    {
+        $this->avgSpeed = $avgSpeed;
 
         return $this;
     }
