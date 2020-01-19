@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Constructor;
 
 use App\Entity\Constructor;
+use App\Service\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class ConstructorFactory
+final class ConstructorFactory implements FactoryInterface
 {
     /**
      * @param array $parameters

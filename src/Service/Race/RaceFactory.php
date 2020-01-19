@@ -7,9 +7,10 @@ namespace App\Service\Race;
 use App\Entity\Circuit;
 use App\Entity\Race;
 use App\Entity\Season;
+use App\Service\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class RaceFactory
+final class RaceFactory implements FactoryInterface
 {
     /**
      * @param array $parameters[season,location, round, date]

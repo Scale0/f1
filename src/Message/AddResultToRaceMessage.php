@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-use App\Entity\Driver;
+use App\Entity\DriverConstructorSeason;
 use App\Entity\Race;
 
 class AddResultToRaceMessage
 {
     /** @var Race */
     private $race;
-    /** @var Driver */
+    /** @var DriverConstructorSeason */
     private $driver;
     /** @var integer */
     private $position;
@@ -43,19 +43,19 @@ class AddResultToRaceMessage
     }
 
     /**
-     * @return Driver
+     * @return DriverConstructorSeason
      */
-    public function getDriver(): Driver
+    public function getDriver(): DriverConstructorSeason
     {
         return $this->driver;
     }
 
     /**
-     * @param Driver $driver
+     * @param DriverConstructorSeason $driver
      *
      * @return self
      */
-    public function setDriver($driver): self
+    public function setDriver(DriverConstructorSeason $driver): self
     {
         $this->driver = $driver;
 

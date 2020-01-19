@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Driver;
 
 use App\Entity\Driver;
+use App\Service\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-class DriverFactory
+class DriverFactory implements FactoryInterface
 {
     public static function create(array $parameters): Driver
     {

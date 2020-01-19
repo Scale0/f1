@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Location;
 
 use App\Entity\Location;
+use App\Service\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-class LocationFactory
+class LocationFactory implements FactoryInterface
 {
     public static function create(array $parameters): Location
     {
