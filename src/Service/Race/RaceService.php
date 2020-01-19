@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Race;
 
 use App\Entity\Circuit;
+use App\Entity\ScheduledMessage;
 use App\Message\AddRaceResultsToRaceMessage;
 use App\Message\AddRaceToSeasonMessage;
-use App\Entity\ScheduledMessage;
 use App\Repository\RaceRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

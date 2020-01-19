@@ -6,10 +6,8 @@ namespace App\Service;
 
 use App\Entity\Circuit;
 use App\Entity\Constructor;
-use App\Entity\Driver;
 use App\Entity\Race;
 use App\Entity\Season;
-use App\Entity\ScheduledMessage;
 use App\Message\AddConstructorMessage;
 use App\Message\AddDriverMessage;
 use App\Message\AddRaceToSeasonMessage;
@@ -19,9 +17,7 @@ use App\Repository\CircuitRepository;
 use App\Repository\ConstructorRepository;
 use App\Repository\DriverRepository;
 use App\Repository\RaceResultRepository;
-use App\Repository\ScheduledMessageRepository;
 use App\Repository\SeasonRepository;
-use Symfony\Component\Asset\Package;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -38,15 +34,12 @@ final class ErgastService implements F1ServiceInterface
     private $driverRepository;
     /** @var RaceResultRepository */
     private $raceResultRepository;
-    /** @var ScheduledMessageRepository */
-    private $scheduledMessageRepository;
     /**
      * @var MessageBus
      */
     private $bus;
 
     public function __construct(
-        ScheduledMessageRepository $scheduledMessageRepository,
         SeasonRepository $seasonRepository,
         CircuitRepository $circuitRepository,
         ConstructorRepository $constructorRepository,
@@ -55,7 +48,6 @@ final class ErgastService implements F1ServiceInterface
         MessageBusInterface $bus
     )
     {
-        $this->scheduledMessageRepository = $scheduledMessageRepository;
         $this->seasonRepository = $seasonRepository;
         $this->circuitRepository = $circuitRepository;
         $this->constructorRepository = $constructorRepository;
