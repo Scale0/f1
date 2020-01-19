@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\Repository\ScheduledMessageRepository;
-use App\Service\F1ServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,7 +58,7 @@ class ExecuteScheduledMessagesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var  $scheduledMessagesToExecute */
+        /** @var $scheduledMessagesToExecute */
         $scheduledMessagesToExecute = $this->scheduledMessageRepository->findMessagesToExecute();
 
         foreach ($scheduledMessagesToExecute as $scheduledMessage) {
