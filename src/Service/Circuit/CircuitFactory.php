@@ -6,9 +6,10 @@ namespace App\Service\Circuit;
 
 use App\Entity\Circuit;
 use App\Entity\Location;
+use App\Service\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-class CircuitFactory
+class CircuitFactory implements FactoryInterface
 {
     static public function create($parameters): Circuit
     {

@@ -28,6 +28,7 @@ final class RaceService
 
             $race = RaceFactory::create($raceInfo);
             $manager->getManager()->persist($race);
+            $manager->getManager()->flush();
 
             /* toevoegen van de race aan de scheduled messages, eerst moet er een message gemaakt worden die race resultaten gaat ophalen. */
             $scheduledMessage = new ScheduledMessage();
