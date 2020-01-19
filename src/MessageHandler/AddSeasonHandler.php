@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\AddSeasonMessage;
-use App\Service\F1ServiceInterface;
 use App\Service\Season\SeasonFactory;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 final class AddSeasonHandler extends DefaultF1MessageHandler implements MessageHandlerInterface

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-use App\Entity\Driver;
+use App\Entity\DriverConstructorSeason;
 use App\Entity\Race;
 
 class AddResultToRaceMessage
 {
     /** @var Race */
     private $race;
-    /** @var Driver */
+    /** @var DriverConstructorSeason */
     private $driver;
     /** @var integer */
     private $position;
@@ -21,6 +21,14 @@ class AddResultToRaceMessage
     private $grid;
     /** @var integer */
     private $laps;
+    /** @var integer */
+    private $fastestLap;
+    /** @var integer */
+    private $fastestLapRank;
+    /** @var string */
+    private $fastestLapTime;
+    /** @var string */
+    private $avgSpeed;
 
     /**
      * @return Race
@@ -43,19 +51,19 @@ class AddResultToRaceMessage
     }
 
     /**
-     * @return Driver
+     * @return DriverConstructorSeason
      */
-    public function getDriver(): Driver
+    public function getDriver(): DriverConstructorSeason
     {
         return $this->driver;
     }
 
     /**
-     * @param Driver $driver
+     * @param DriverConstructorSeason $driver
      *
      * @return self
      */
-    public function setDriver($driver): self
+    public function setDriver(DriverConstructorSeason $driver): self
     {
         $this->driver = $driver;
 
@@ -131,13 +139,93 @@ class AddResultToRaceMessage
     }
 
     /**
-     * @param int $laps
+     * @param int|null $laps
      *
      * @return self
      */
-    public function setLaps(int $laps): self
+    public function setLaps(?int $laps): self
     {
         $this->laps = $laps;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFastestLap(): ?int
+    {
+        return $this->fastestLap;
+    }
+
+    /**
+     * @param int|null $fastestLap
+     *
+     * @return self
+     */
+    public function setFastestLap(?int $fastestLap): self
+    {
+        $this->fastestLap = $fastestLap;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFastestLapRank(): ?int
+    {
+        return $this->fastestLapRank;
+    }
+
+    /**
+     * @param int|null $fastestLapRank
+     *
+     * @return self
+     */
+    public function setFastestLapRank(?int $fastestLapRank): self
+    {
+        $this->fastestLapRank = $fastestLapRank;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFastestLapTime(): ?string
+    {
+        return $this->fastestLapTime;
+    }
+
+    /**
+     * @param string|null $fastestLapTime
+     *
+     * @return self
+     */
+    public function setFastestLapTime(?string $fastestLapTime): self
+    {
+        $this->fastestLapTime = $fastestLapTime;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvgSpeed(): ?string
+    {
+        return $this->avgSpeed;
+    }
+
+    /**
+     * @param string|null $avgSpeed
+     *
+     * @return self
+     */
+    public function setAvgSpeed(?string $avgSpeed): self
+    {
+        $this->avgSpeed = $avgSpeed;
 
         return $this;
     }

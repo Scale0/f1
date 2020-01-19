@@ -6,7 +6,6 @@ namespace App\MessageHandler;
 
 use App\Service\F1ServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class DefaultF1MessageHandler

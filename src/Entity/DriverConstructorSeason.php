@@ -30,19 +30,19 @@ class DriverConstructorSeason
      * @ORM\ManyToOne(targetEntity="App\Entity\Driver")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $Driver;
+    private $driver;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Constructor")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $Constructor;
+    private $constructor;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Season")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $Season;
+    private $season;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\RaceResult", mappedBy="Driver")
@@ -61,36 +61,36 @@ class DriverConstructorSeason
 
     public function getDriver(): ?Driver
     {
-        return $this->Driver;
+        return $this->driver;
     }
 
-    public function setDriver(?Driver $Driver): self
+    public function setDriver(?Driver $driver): self
     {
-        $this->Driver = $Driver;
+        $this->driver = $driver;
 
         return $this;
     }
 
     public function getConstructor(): ?Constructor
     {
-        return $this->Constructor;
+        return $this->constructor;
     }
 
-    public function setConstructor(?Constructor $Constructor): self
+    public function setConstructor(?Constructor $constructor): self
     {
-        $this->Constructor = $Constructor;
+        $this->constructor = $constructor;
 
         return $this;
     }
 
     public function getSeason(): ?Season
     {
-        return $this->Season;
+        return $this->season;
     }
 
-    public function setSeason(?Season $Season): self
+    public function setSeason(?Season $season): self
     {
-        $this->Season = $Season;
+        $this->season = $season;
 
         return $this;
     }

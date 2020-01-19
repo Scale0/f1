@@ -6,10 +6,8 @@ namespace App\Service;
 
 use App\Entity\Circuit;
 use App\Entity\Constructor;
-use App\Entity\Driver;
 use App\Entity\Race;
 use App\Entity\Season;
-use App\Entity\ScheduledMessage;
 use App\Message\AddConstructorMessage;
 use App\Message\AddDriverMessage;
 use App\Message\AddRaceToSeasonMessage;
@@ -17,11 +15,10 @@ use App\Message\AddResultToRaceMessage;
 use App\Message\AddSeasonMessage;
 use App\Repository\CircuitRepository;
 use App\Repository\ConstructorRepository;
+use App\Repository\DriverConstructorSeasonRepository;
 use App\Repository\DriverRepository;
 use App\Repository\RaceResultRepository;
-use App\Repository\ScheduledMessageRepository;
 use App\Repository\SeasonRepository;
-use Symfony\Component\Asset\Package;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -30,46 +27,56 @@ final class ErgastService implements F1ServiceInterface
 {
     /** @var SeasonRepository */
     private $seasonRepository;
+
     /** @var CircuitRepository */
     private $circuitRepository;
+
     /** @var ConstructorRepository */
     private $constructorRepository;
+
     /** @var DriverRepository */
     private $driverRepository;
+
     /** @var RaceResultRepository */
     private $raceResultRepository;
-    /** @var ScheduledMessageRepository */
-    private $scheduledMessageRepository;
+
+    /** @var DriverConstructorSeasonRepository */
+    private $driverConstructorSeasonRepo;
+
     /**
      * @var MessageBus
      */
     private $bus;
 
     public function __construct(
-        ScheduledMessageRepository $scheduledMessageRepository,
         SeasonRepository $seasonRepository,
         CircuitRepository $circuitRepository,
         ConstructorRepository $constructorRepository,
         DriverRepository $driverRepository,
         RaceResultRepository $raceResultRepository,
+        DriverConstructorSeasonRepository $driverConstructorSeasonRepo,
         MessageBusInterface $bus
-    )
-    {
-        $this->scheduledMessageRepository = $scheduledMessageRepository;
+    ) {
         $this->seasonRepository = $seasonRepository;
         $this->circuitRepository = $circuitRepository;
         $this->constructorRepository = $constructorRepository;
         $this->driverRepository = $driverRepository;
         $this->raceResultRepository = $raceResultRepository;
+        $this->driverConstructorSeasonRepo = $driverConstructorSeasonRepo;
         $this->bus = $bus;
     }
 
+    /**
+     * @param string $year
+     *
+     * @throws \Exception
+     */
     function addSeason($year): void
     {
         /** @var Season $existingSeason */
         $existingSeason = $this->seasonRepository->findOneBy(['year' => $year]);
         if (empty($existingSeason)) {
-            $result = $this->getResultsFromApi($year .'/seasons', false);
+            $result = $this->getResultsFromApi($year.'/seasons', false);
             $addSeason = new AddSeasonMessage();
             $addSeason->setYear($result['SeasonTable']['Seasons'][0]['season']);
 
@@ -77,21 +84,29 @@ final class ErgastService implements F1ServiceInterface
         }
     }
 
+    /**
+     * @param Season $season
+     *
+     * @throws \Exception
+     */
     public function updateConstructors(Season $season): void
     {
-        $constructors = $this->getResultsFromApi($season->getYear() . '/constructors');
+        $constructors = $this->getResultsFromApi($season->getYear().'/constructors');
         $rawConstructors = $constructors['ConstructorTable']['Constructors'];
 
         foreach ($rawConstructors as $rawConstructor) {
             /** @var Constructor $constructor */
-            $constructor = $this->constructorRepository->findOneBy(['constructorId' => $rawConstructor['constructorId']]);
+            $constructor = $this->constructorRepository->findOneBy(
+                ['constructorId' => $rawConstructor['constructorId']]
+            );
             if (empty($constructor)) {
                 $constructorMessage = new AddConstructorMessage();
                 $constructorMessage
                     ->setSeason($season)
                     ->setConstructorId($rawConstructor['constructorId'])
                     ->setName($rawConstructor['name'])
-                    ->setNationality($rawConstructor['nationality']);
+                    ->setNationality($rawConstructor['nationality'])
+                ;
 
                 $this->bus->dispatch($constructorMessage);
             } else {
@@ -100,13 +115,17 @@ final class ErgastService implements F1ServiceInterface
         }
     }
 
+    /**
+     * @param Season $season
+     *
+     * @throws \Exception
+     */
     public function addRaceScheduleToSeason(Season $season): void
     {
         $schedule = $this->getResultsFromApi($season->getYear());
         $rawRaces = $schedule['RaceTable']['Races'];
 
-
-        foreach($rawRaces as $rawRace) {
+        foreach ($rawRaces as $rawRace) {
             /** @var Circuit $circuit */
             $circuit = $this->circuitRepository->findBy(['circuitId' => $rawRace['Circuit']['circuitId']]);
             if (empty($circuit)) {
@@ -114,14 +133,15 @@ final class ErgastService implements F1ServiceInterface
                 $rSM = new AddRaceToSeasonMessage();
                 $rSM->setCircuitId($rawRace['Circuit']['circuitId'])
                     ->setCircuitName($rawRace['Circuit']['circuitName'])
-                    ->setDate(new \DateTime($rawRace['date']. ' ' . (isset($rawRace['time']) ? $rawRace['time'] : '')))
+                    ->setDate(new \DateTime($rawRace['date'].' '.(isset($rawRace['time']) ? $rawRace['time'] : '')))
                     ->setLocationCountry($rawRace['Circuit']['Location']['country'])
                     ->setLocationLocality($rawRace['Circuit']['Location']['locality'])
                     ->setLocationLat($rawRace['Circuit']['Location']['lat'])
                     ->setLocationLong($rawRace['Circuit']['Location']['long'])
                     ->setName($rawRace['raceName'])
                     ->setRound(intval($rawRace['round']))
-                    ->setSeason($season);
+                    ->setSeason($season)
+                ;
                 $this->bus->dispatch($rSM);
             }
         }
@@ -135,9 +155,11 @@ final class ErgastService implements F1ServiceInterface
      */
     public function updateDrivers(Season $season, Constructor $constructor)
     {
-        $drivers = $this->getResultsFromApi($season->getYear() . '/constructors/' . $constructor->getConstructorId() . '/drivers');
+        $drivers = $this->getResultsFromApi(
+            $season->getYear().'/constructors/'.$constructor->getConstructorId().'/drivers'
+        );
         $rawDrivers = $drivers['DriverTable']['Drivers'];
-        foreach($rawDrivers as $rawDriver) {
+        foreach ($rawDrivers as $rawDriver) {
             $driver = $this->driverRepository->findBy(['driverId' => $rawDriver['driverId']]);
             if (empty($driver)) {
                 $driverMessage = new AddDriverMessage();
@@ -150,12 +172,18 @@ final class ErgastService implements F1ServiceInterface
                     ->setFirstName($rawDriver['givenName'])
                     ->setLastName($rawDriver['familyName'])
                     ->setDateOfBirth(new \DateTime($rawDriver['dateOfBirth']))
-                    ->setNationality($rawDriver['nationality']);
+                    ->setNationality($rawDriver['nationality'])
+                ;
                 $this->bus->dispatch($driverMessage);
             }
         }
     }
 
+    /**
+     * @param $url
+     *
+     * @return array
+     */
     function getResultsFromApi($url): array
     {
         $baseUri = $_ENV['ERGAST_BASE_URI'];
@@ -165,17 +193,29 @@ final class ErgastService implements F1ServiceInterface
         return $response->toArray()['MRData'];
     }
 
+    /**
+     * @param Race $race
+     */
     public function updateRaceResults(Race $race): void
     {
-        $rawRaceResults = $this->getResultsFromApi($race->getSeason()->getYear() . '/' . $race->getRound() . '/results');
+        $rawRaceResults = $this->getResultsFromApi(
+            $race->getSeason()
+                ->getYear().'/'.$race->getRound().'/results'
+        );
         $rawRaceResults = $rawRaceResults['RaceTable']['Races'][0]['Results'];
-        foreach($rawRaceResults as $rawRaceResult) {
+        foreach ($rawRaceResults as $rawRaceResult) {
             $driver = $this->driverRepository->findOneBy(['driverId' => $rawRaceResult['Driver']['driverId']]);
             $raceResult = $this->raceResultRepository->findBy([
-                'race' => $race,
-                'driver' => $driver
-            ]);
+                    'race' => $race,
+                    'driver' => $driver
+                ]
+            );
             if (empty($raceResult)) {
+                $fastestLap = $this->returnIntOrNull($rawRaceResult['FastestLap']['lap'] ?? null);
+                $fastestLapRank = $this->returnIntOrNull($rawRaceResult['FastestLap']['rank'] ?? null);
+                $fastestLapTime = $rawRaceResult['FastestLap']['Time']['time'] ?? null;
+                $avgSpeed = $rawRaceResult['FastestLap']['AverageSpeed']['speed'] ?? null;
+                $driver = $this->driverConstructorSeasonRepo->findOneBy(['driver' => $driver, 'season' => $race->getSeason()]);
                 $raceResultMessage = new AddResultToRaceMessage();
                 $raceResultMessage
                     ->setRace($race)
@@ -184,12 +224,18 @@ final class ErgastService implements F1ServiceInterface
                     ->setGrid(intval($rawRaceResult['grid']))
                     ->setLaps(intval($rawRaceResult['laps']))
                     ->setStatus($rawRaceResult['status'])
+                    ->setFastestLap($fastestLap)
+                    ->setFastestLapRank($fastestLapRank)
+                    ->setFastestLapTime($fastestLapTime)
+                    ->setAvgSpeed($avgSpeed)
                 ;
                 $this->bus->dispatch($raceResultMessage);
             }
-
         }
-        die();
+    }
+
+    private function returnIntOrNull($value) {
+        return !is_null($value) ? intval($value) : $value;
     }
 
     function asciiF1Car(): string
