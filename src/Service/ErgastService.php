@@ -10,6 +10,7 @@ use App\Entity\Race;
 use App\Entity\Season;
 use App\Message\AddConstructorMessage;
 use App\Message\AddDriverMessage;
+use App\Message\AddLapToRaceMessage;
 use App\Message\AddRaceToSeasonMessage;
 use App\Message\AddResultToRaceMessage;
 use App\Message\AddSeasonMessage;
@@ -17,6 +18,7 @@ use App\Repository\CircuitRepository;
 use App\Repository\ConstructorRepository;
 use App\Repository\DriverConstructorSeasonRepository;
 use App\Repository\DriverRepository;
+use App\Repository\LapRepository;
 use App\Repository\RaceResultRepository;
 use App\Repository\SeasonRepository;
 use Symfony\Component\HttpClient\HttpClient;
@@ -40,6 +42,9 @@ final class ErgastService implements F1ServiceInterface
     /** @var RaceResultRepository */
     private $raceResultRepository;
 
+    /** @var LapRepository  */
+    private $lapRepository;
+
     /** @var DriverConstructorSeasonRepository */
     private $driverConstructorSeasonRepo;
 
@@ -55,6 +60,7 @@ final class ErgastService implements F1ServiceInterface
         DriverRepository $driverRepository,
         RaceResultRepository $raceResultRepository,
         DriverConstructorSeasonRepository $driverConstructorSeasonRepo,
+        LapRepository $lapRepository,
         MessageBusInterface $bus
     ) {
         $this->seasonRepository = $seasonRepository;
@@ -63,6 +69,7 @@ final class ErgastService implements F1ServiceInterface
         $this->driverRepository = $driverRepository;
         $this->raceResultRepository = $raceResultRepository;
         $this->driverConstructorSeasonRepo = $driverConstructorSeasonRepo;
+        $this->lapRepository = $lapRepository;
         $this->bus = $bus;
     }
 
@@ -147,6 +154,39 @@ final class ErgastService implements F1ServiceInterface
         }
     }
 
+    function addLapsToRace(Race $race, int $lapCount = 1) : void{
+        $year = $race->getSeason()->getYear();
+        $round = $race->getRound();
+        $lap = $this->getResultsFromApi($year . '/' . $round . '/laps/'. $lapCount);
+        $rawRace = $lap['RaceTable']['Races'];
+        if (empty($rawRace)) {
+            echo "geen laps meer beschikbaar";
+            return;
+        }
+        $timings = $rawRace[0]['Laps'][0]['Timings'];
+        $lap = intval($rawRace[0]['Laps'][0]['number']);
+
+        echo "process lap: " . $lap . " of race: " . $race->getCircuit()->getName() . "\n\r";
+
+        foreach ($timings as $timing) {
+            $driver = $this->driverRepository->findOneBy(['driverId' => $timing['driverId']]);
+            $driver = $this->driverConstructorSeasonRepo->findOneBy(['driver' => $driver, 'season' => $race->getSeason()]);
+
+            $existingLap = $this->lapRepository->findOneBy(['race' => $race, 'lap' => $lap, 'driver' => $driver]);
+            if (empty($existingLap)) {
+                $lapMessage = new AddLapToRaceMessage();
+                $lapMessage
+                    ->setRace($race)
+                    ->setPosition(intval($timing['position']))
+                    ->setLap($lap)
+                    ->setDriver($driver)
+                    ->setTime($timing['time'])
+                ;
+                $this->bus->dispatch($lapMessage);
+            }
+        }
+        $this->addLapsToRace($race, ++$lapCount);
+    }
     /**
      * @param Season      $season
      * @param Constructor $constructor
@@ -180,15 +220,18 @@ final class ErgastService implements F1ServiceInterface
     }
 
     /**
-     * @param $url
+     * @param      $url
+     *
+     * @param bool $limit
      *
      * @return array
      */
-    function getResultsFromApi($url): array
+    function getResultsFromApi($url, $limit = false): array
     {
+        usleep(100000);
         $baseUri = $_ENV['ERGAST_BASE_URI'];
         $client = HttpClient::createForBaseUri($baseUri);
-        $response = $client->request('GET', $url.'.json');
+        $response = $client->request('GET', $url.'.json' . ($limit ? '?limit='.$limit : ''));
 
         return $response->toArray()['MRData'];
     }
@@ -232,6 +275,7 @@ final class ErgastService implements F1ServiceInterface
                 $this->bus->dispatch($raceResultMessage);
             }
         }
+        $this->addLapsToRace($race);
     }
 
     private function returnIntOrNull($value) {

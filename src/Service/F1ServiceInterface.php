@@ -17,4 +17,5 @@ interface F1ServiceInterface
     function getResultsFromApi($url): array;
     function asciiF1Car(): string;
     function updateRaceResults(Race $race): void;
+    function addLapsToRace(Race $race, int $lap): void;
 }
