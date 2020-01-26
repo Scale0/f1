@@ -45,9 +45,15 @@ class Race
      */
     private $raceResults;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Lap", mappedBy="race")
+     */
+    private $laps;
+
     public function __construct()
     {
         $this->raceResults = new ArrayCollection();
+        $this->laps = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -140,6 +146,37 @@ class Race
             // set the owning side to null (unless already changed)
             if ($raceResult->getRace() === $this) {
                 $raceResult->setRace(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Lap[]
+     */
+    public function getLaps(): Collection
+    {
+        return $this->laps;
+    }
+
+    public function addLap(Lap $lap): self
+    {
+        if (!$this->laps->contains($lap)) {
+            $this->laps[] = $lap;
+            $lap->setRace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLap(Lap $lap): self
+    {
+        if ($this->laps->contains($lap)) {
+            $this->laps->removeElement($lap);
+            // set the owning side to null (unless already changed)
+            if ($lap->getRace() === $this) {
+                $lap->setRace(null);
             }
         }
 

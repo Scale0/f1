@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Race;
 
+use App\Entity\DriverConstructorSeason;
 use App\Entity\Race;
 use App\Entity\RaceResult;
 use App\Service\FactoryInterface;
-use App\Entity\DriverConstructorSeason;
 use Webmozart\Assert\Assert;
 
 class RaceResultFactory implements FactoryInterface

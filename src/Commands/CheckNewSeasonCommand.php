@@ -17,7 +17,7 @@ class CheckNewSeasonCommand extends Command
     /**
      * @var string
      */
-    protected static $defaultName = 'app:f1:season:update';
+    protected static $defaultName = 'scale0:f1:season:update';
 
     /**
      * @var F1ServiceInterface
