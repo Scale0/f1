@@ -19,7 +19,7 @@ class ExecuteScheduledMessagesCommand extends Command
     /**
      * @var string
      */
-    protected static $defaultName = 'app:execute-scheduled-messages';
+    protected static $defaultName = 'scale0:execute-scheduled-messages';
 
     /**
      * @var MessageBusInterface
@@ -65,6 +65,7 @@ class ExecuteScheduledMessagesCommand extends Command
             $messageClassString = $scheduledMessage->getMessage();
             $this->bus->dispatch(new $messageClassString($scheduledMessage->getParameters()));
             $this->managerRegistry->getManager()->remove($scheduledMessage);
+            $this->managerRegistry->getManager()->flush();
         }
         return 0;
     }
