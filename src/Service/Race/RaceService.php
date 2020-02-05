@@ -13,10 +13,16 @@ use Doctrine\Persistence\ManagerRegistry;
 
 final class RaceService
 {
-    public function createRaceIfNotExisting(ManagerRegistry $manager, AddRaceToSeasonMessage $arts, Circuit $circuit)
+    /** @var RaceRepository raceRepo */
+    private $raceRepo;
+
+    public function __construct(ManagerRegistry $manager)
     {
-        $raceRepository = new RaceRepository($manager);
-        $race = $raceRepository->findOneBySeasonAndRound($arts->getSeason(), $arts->getRound());
+        $this->raceRepo = new RaceRepository($manager);
+    }
+    public function createRaceIfNotExisting(AddRaceToSeasonMessage $arts, Circuit $circuit)
+    {
+        $race = $this->raceRepo->findOneBySeasonAndRound($arts->getSeason(), $arts->getRound());
 
         if (!$race) {
             $raceInfo = [

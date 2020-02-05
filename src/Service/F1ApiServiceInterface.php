@@ -8,7 +8,7 @@ use App\Entity\Constructor;
 use App\Entity\Race;
 use App\Entity\Season;
 
-interface F1ServiceInterface
+interface F1ApiServiceInterface
 {
     function addSeason(string $year): void;
     function addRaceScheduleToSeason(Season $season): void;

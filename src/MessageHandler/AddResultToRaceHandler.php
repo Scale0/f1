@@ -7,7 +7,7 @@ namespace App\MessageHandler;
 use App\Message\AddResultToRaceMessage;
 use App\Repository\DriverConstructorSeasonRepository;
 use App\Repository\RaceRepository;
-use App\Service\F1ServiceInterface;
+use App\Service\F1ApiServiceInterface;
 use App\Service\Race\RaceResultFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -22,7 +22,7 @@ class AddResultToRaceHandler extends DefaultF1MessageHandler implements MessageH
 
     public function __construct(
         ManagerRegistry $managerRegistry,
-        F1ServiceInterface $f1Service,
+        F1ApiServiceInterface $f1Service,
         MessageBusInterface $bus,
         RaceRepository $raceRepository,
         DriverConstructorSeasonRepository $driverConstructorSeasonRepository

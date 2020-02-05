@@ -6,7 +6,7 @@ namespace App\Commands;
 
 use App\Entity\Season;
 use App\Repository\SeasonRepository;
-use App\Service\F1ServiceInterface;
+use App\Service\F1ApiServiceInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +20,7 @@ class CheckNewSeasonCommand extends Command
     protected static $defaultName = 'scale0:f1:season:update';
 
     /**
-     * @var F1ServiceInterface
+     * @var F1ApiServiceInterface
      */
     private $f1Service;
 
@@ -32,11 +32,11 @@ class CheckNewSeasonCommand extends Command
     /**
      * ScheduledMessage constructor.
      *
-     * @param F1ServiceInterface $f1Service
-     * @param SeasonRepository $seasonRepository
+     * @param F1ApiServiceInterface $f1Service
+     * @param SeasonRepository      $seasonRepository
      */
     public function __construct(
-        F1ServiceInterface $f1Service,
+        F1ApiServiceInterface $f1Service,
         SeasonRepository $seasonRepository
     )
     {

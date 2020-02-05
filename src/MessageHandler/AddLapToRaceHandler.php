@@ -7,7 +7,7 @@ namespace App\MessageHandler;
 use App\Message\AddLapToRaceMessage;
 use App\Repository\DriverConstructorSeasonRepository;
 use App\Repository\RaceRepository;
-use App\Service\F1ServiceInterface;
+use App\Service\F1ApiServiceInterface;
 use App\Service\Race\LapFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -23,7 +23,7 @@ class AddLapToRaceHandler extends DefaultF1MessageHandler implements MessageHand
 
     public function __construct(
         ManagerRegistry $managerRegistry,
-        F1ServiceInterface $f1Service,
+        F1ApiServiceInterface $f1Service,
         MessageBusInterface $bus,
         RaceRepository $raceRepository,
         DriverConstructorSeasonRepository $driverConstructorSeasonRepository

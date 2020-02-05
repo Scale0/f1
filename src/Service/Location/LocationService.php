@@ -10,10 +10,17 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class LocationService
 {
-    public function createLocationIfNotExisting(ManagerRegistry $manager, AddRaceToSeasonMessage $arts)
+    /** @var LocationRepository */
+    private $locationRepo;
+    public function __construct(ManagerRegistry $manager)
     {
-        $locationRepo = new LocationRepository($manager);
-        $location = $locationRepo->findOneByLongitudeAndLatitude($arts->getLocationLong(), $arts->getLocationLat());
+        /** @var LocationRepository $circuitRepo */
+        $this->locationRepo = new LocationRepository($manager);
+    }
+
+    public function createLocationIfNotExisting(AddRaceToSeasonMessage $arts)
+    {
+        $location = $this->locationRepo->findOneByLongitudeAndLatitude($arts->getLocationLong(), $arts->getLocationLat());
 
         if (!$location) {
             $locationInfo = [

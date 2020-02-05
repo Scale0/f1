@@ -25,7 +25,7 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class ErgastService implements F1ServiceInterface
+final class ErgastApiService implements F1ApiServiceInterface
 {
     /** @var SeasonRepository */
     private $seasonRepository;

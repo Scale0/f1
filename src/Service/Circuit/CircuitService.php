@@ -11,11 +11,16 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class CircuitService
 {
-    public function createCircuitIfNotExisting(ManagerRegistry $manager, AddRaceToSeasonMessage $arts, Location $location)
+    /** @var CircuitRepository */
+    private $circuitRepo;
+    public function __construct(ManagerRegistry $manager)
     {
         /** @var CircuitRepository $circuitRepo */
-        $circuitRepo = new CircuitRepository($manager);
-        $circuit = $circuitRepo->findOneByCircuitId($arts->getCircuitId());
+        $this->circuitRepo = new CircuitRepository($manager);
+    }
+    public function createCircuitIfNotExisting(AddRaceToSeasonMessage $arts, Location $location)
+    {
+        $circuit = $this->circuitRepo->findOneByCircuitId($arts->getCircuitId());
         if (!$circuit) {
             $circuitInfo = [
                 'name' => $arts->getCircuitName(),
@@ -28,5 +33,9 @@ class CircuitService
         }
 
         return $circuit;
+    }
+
+    public function getCircuitByName(String $name) {
+        return $this->circuitRepo->findOneBy(['name' => $name]);
     }
 }

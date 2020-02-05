@@ -6,7 +6,7 @@ namespace App\MessageHandler;
 
 use App\Message\AddRaceToSeasonMessage;
 use App\Service\Circuit\CircuitService;
-use App\Service\F1ServiceInterface;
+use App\Service\F1ApiServiceInterface;
 use App\Service\Location\LocationService;
 use App\Service\Race\RaceService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -27,7 +27,7 @@ class AddRaceToSeasonHandler extends DefaultF1MessageHandler implements MessageH
     private $raceService;
     public function __construct(
         ManagerRegistry $managerRegistry,
-        F1ServiceInterface $f1Service,
+        F1ApiServiceInterface $f1Service,
         LocationService $locationService,
         CircuitService $circuitService,
         RaceService $raceService,
@@ -41,8 +41,8 @@ class AddRaceToSeasonHandler extends DefaultF1MessageHandler implements MessageH
 
     public function __invoke(AddRaceToSeasonMessage $arts)
     {
-        $location = $this->locationService->createLocationIfNotExisting($this->managerRegistry, $arts);
-        $circuit = $this->circuitService->createCircuitIfNotExisting($this->managerRegistry, $arts, $location);
-        $this->raceService->createRaceIfNotExisting($this->managerRegistry, $arts, $circuit);
+        $location = $this->locationService->createLocationIfNotExisting($arts);
+        $circuit = $this->circuitService->createCircuitIfNotExisting($arts, $location);
+        $this->raceService->createRaceIfNotExisting($arts, $circuit);
     }
 }
